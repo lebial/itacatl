@@ -1,17 +1,17 @@
-const { NetworkAuthenticationRequire } = require('http-errors');
 const jwt = require('jsonwebtoken');
 const db = require('../db');
 
 const Auth = {
   async verifyToken(req, res, next) {
     const token = req.headers['x-access-token'];
-    if (!token) return res.status(400).send({ 'message': 'Token not provided' });
+    if (!token) return res.status(400).send({ 'message': 'Not logged in' });
     try {
       const decoded = await jwt.verify(token, process.env.SECRET);
-      const query = 'SELECT * FROM users WHERE id = $1';
-      const { rows } = await db.query(query, [decoded.id_user]);
+      const { userId } = decoded;
+      const query = 'SELECT id_user FROM users WHERE id_user = $1';
+      const { rows } = await db.query(query, [userId]);
       if (!rows.length) return res.status(400).send({ 'message': 'Token is invalid' });
-      req.user = { id: decoded.id_user };
+      req.user = { userId };
       next();
     } catch (err) {
       return res.status(400).send(err);
@@ -19,4 +19,4 @@ const Auth = {
   }
 }
 
-module.exports = { Auth };
+module.exports = Auth;

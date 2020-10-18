@@ -25,22 +25,43 @@ const User = {
     try {
       const { rows } = await db.query(query, values);
       const [ firstRow ] = rows;
-      console.log(firstRow);
       const token = Helper.generateToken(firstRow.id_user);
-      console.log(token);
       return res.status(201).send({...firstRow, token});
     } catch (err) {
       if (err.routine === '_bt_check_unique') return res.status(400).send({ 'message': 'That email already exists'});
+      console.log(err);
       return res.status(400).send(err);
     }
   },
   async getAll(req, res) {
-    const query = 'SELECT * FROM users';
+    const query = 'SELECT id_user, name, last_name, email FROM users';
     try {
       const { rows } = await db.query(query, []);
       return res.status(200).send(rows);
     } catch (err) {
       return res.status(400).send(err);
+    }
+  },
+  async login(req, res) {
+    const { email, password } = req.body;
+    if (!email || !password) return res.status(400).send({'message': 'Some values are missing'});
+    if (!Helper.isEmailValid(email)) 
+      return res.status(400).send({ 'message': 'Please enter a valid email address' });
+    const text = 'SELECT * FROM users WHERE email = $1';
+    try {
+      const { rows: users } = await db.query(text, [email]);
+      const [user] = users;
+      if (!user) {
+        return res.status(400).send({'message': 'The credentials you provided are incorrect'});
+      }
+      if(!Helper.comparePassword(user.password, password)) {
+        return res.status(400).send({ 'message': 'The credentials you provided are incorrect' });
+      }
+      const token = Helper.generateToken(user.id_user);
+      return res.status(200).send({ token });
+    } catch(error) {
+      console.log(error);
+      return res.status(400).send(error)
     }
   }
 };
