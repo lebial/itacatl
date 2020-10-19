@@ -1,7 +1,7 @@
-var express = require('express');
+const express = require('express');
 const usersController = require('../controllers/Users');
 const auth = require('../middlewares/Auth');
-var router = express.Router();
+const router = express.Router();
 
 /* GET users listing. */
 router.get('/', auth.verifyToken, usersController.getAll);
