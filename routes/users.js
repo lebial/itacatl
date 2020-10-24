@@ -6,8 +6,7 @@ const router = express.Router();
 /* GET users listing. */
 router.get('/', auth.verifyToken, usersController.getAll);
 
-router.post('/', (req, res) => {
-  usersController.create(req, res);
-})
+// Create user
+router.post('/', usersController.create);
 
 module.exports = router;
