@@ -2,7 +2,7 @@ const moment = require('moment');
 const _ = require('lodash');
 const db = require('../db');
 const Helper = require('./Helper');
-const userModel = require('../models/User');
+const { UserModel } = require('../models');
 
 const User = {
   async create(req, res) {
@@ -11,7 +11,7 @@ const User = {
     if (!Helper.isEmailValid(email)) res.status(400).send({ 'message': 'Some values are missing' });
     const hashedPassword = Helper.hashPassword(password);
     try {
-      const user = new userModel({
+      const user = new UserModel({
         userName,
         lastName,
         email,
@@ -29,7 +29,7 @@ const User = {
   },
   async getAll(req, res) {
     try {
-      const  users  = await userModel.find();
+      const  users  = await UserModel.find();
       return res.status(200).send(users);
     } catch (err) {
       return res.status(400).send(err);
@@ -41,7 +41,7 @@ const User = {
     if (!Helper.isEmailValid(email)) 
       return res.status(400).send({ 'message': 'Please enter a valid email address' });
     try {
-      const users = await userModel.find({ email });
+      const users = await UserModel.find({ email });
       const [ user ] = users;
       if (_.isEmpty(user)) {
         return res.status(400).send({'message': 'The credentials you provided are incorrect'});

@@ -1,7 +1,7 @@
 const moment = require('moment');
 const _ = require('lodash');
 const Helper = require('./Helper');
-const BusinessModel = require('../models/Business');
+const { BusinessModel } = require('../models');
 
 const Business = {
   async create(req, res) {

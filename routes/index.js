@@ -1,14 +1,13 @@
-var express = require('express');
-var router = express.Router();
-const userController = require('../controllers/Users');
+const MainRoutes = require('./mainRoutes');
+const BusinessesRoutes = require('./businessesRoutes');
+const UsersRoutes = require('./usersRoutes');
+const DriversRoutes = require ('./driversRoutes');
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
+const Routes = {
+  MainRoutes,
+  BusinessesRoutes,
+  UsersRoutes,
+  DriversRoutes,
+}
 
-router.post('/login', (req, res) => {
- userController.login(req, res);
-});
-
-module.exports = router;
+module.exports = Routes;
