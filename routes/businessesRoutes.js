@@ -1,14 +1,11 @@
 const router = require('express').Router();
-const auth = require('../middlewares/Auth');
+const {protect} = require('../middlewares/Auth');
 const { BusinessController } = require('../controllers');
 
 // Get Businesses
-router.get('/', auth.verifyToken, BusinessController.getAll);
+// router.get('/', protect, BusinessController.getAll);
 
 //Create Business
-router.post('/', BusinessController.create);
-
-//Login
-router.post('/login', BusinessController.login);
+// router.post('/', BusinessController.create);
 
 module.exports = router;

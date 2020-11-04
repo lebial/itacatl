@@ -4,6 +4,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const cors = require('cors');
+const colors = require('colors');
 
 const Routes = require('./routes/');
 
@@ -20,9 +21,10 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', Routes.MainRoutes);
-app.use('/users', Routes.UsersRoutes);
-app.use('/business', Routes.BusinessesRoutes);
-app.use('/drivers', Routes.DriversRoutes);
+app.use('/api/v1/users', Routes.UsersRoutes);
+app.use('/api/v1/business', Routes.BusinessesRoutes);
+app.use('/api/v1/drivers', Routes.DriversRoutes);
+app.use('/api/v1/auth', Routes.AuthRoutes);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

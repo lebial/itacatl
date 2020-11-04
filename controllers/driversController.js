@@ -1,5 +1,4 @@
 const _ = require('lodash');
-const Helper = require('./Helper');
 const { DriverModel } = require('../models');
 const { create } = require('lodash');
 const { getAll } = require('./businessesController');
@@ -26,7 +25,6 @@ const Driver = {
     const { firstName, lastName, licenceNumber, vehiclePlate, password, phone } = req.body;
     const errors =  validateDriverData({ firstName, lastName, licenceNumber, vehiclePlate, password, phone });
     if (!_.isEmpty(errors)) res.status(400).send({ errors });
-    const hashedPassword = Helper.hashPassword(password);
     try {
       const driver = new DriverModel({
         firstName,
@@ -37,8 +35,6 @@ const Driver = {
         phone,
       });
       await driver.save();
-      const token = Helper.generateToken(driver.id);
-      res.status(201).send({ driver, token });
     } catch (error) {
       console.log(error);
       res.status(500).send({ error });
