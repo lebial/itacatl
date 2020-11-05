@@ -4,15 +4,19 @@
  * Module dependencies.
  */
 
+const dotenv = require('dotenv');
 var mongoose = require('mongoose');
 var app = require('../app');
 var debug = require('debug')('itacatl:server');
 var http = require('http');
 
+dotenv.config();
+
 /**
  * Get port from environment and store in Express.
  */
 
+ console.log('*************', process.env.DB_URL)
 var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
@@ -27,12 +31,12 @@ var server = http.createServer(app);
  */
 mongoose.connect(process.env.DB_URL, { useNewUrlParser: true, useCreateIndex: true })
   .then(() => {
-    console.log('conected to mongo');
+    console.log('connected to mongo'.cyan);
     server.listen(port);
     server.on('error', onError);
     server.on('listening', onListening);
   })
-  .catch(err => console.log(err));
+  .catch(err => console.log(err.orange));
 
 /**
  * Normalize a port into a number, string, or false.

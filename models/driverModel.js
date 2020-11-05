@@ -1,11 +1,12 @@
 const mongoose = require('mongoose');
 
 const schema = new mongoose.Schema({
-  name: String,
-  enabled: Boolean,
-  daysNotInService: Array,
+  firstName: String,
+  lastName: String,
+  licenceNumber: String,
+  vehiclePlate: String,
   phone: { type: String, unique: true },
   password: String,
 });
 
-module.exports = mongoose.model('Business', schema);
+module.exports = mongoose.model('Driver', schema);
