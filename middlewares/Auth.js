@@ -13,8 +13,8 @@ const Auth = {
     }
     if (!token) return next(new ErrorResponse('Not authorized to access this route', 401));
     try {
-      const decoded = jwt.verify(token, process.env.SECRET);
-      req.user = User.findById(decoded.id);
+      const decoded = await jwt.verify(token, process.env.SECRET);
+      req.user = await User.findById(decoded.id);
       next();
     } catch (error) {
       return next(new ErrorResponse('Not authorized to access this route', 401));
