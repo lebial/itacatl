@@ -1,21 +1,30 @@
+const moment = require('moment');
+const asyncHandler = require('./async');
+const ErrorResponse = require('../utils/errorResponse');
+const User = require('../models/userModel');
 const jwt = require('jsonwebtoken');
-const db = require('../db');
 
 const Auth = {
-  async verifyToken(req, res, next) {
-    const token = req.headers['x-access-token'];
-    if (!token) return res.status(400).send({ 'message': 'Not logged in' });
+  protect: asyncHandler(async (req, res, next) => {
+    let token;
+    const { authorization } = req.headers;
+    if (authorization && authorization.startsWith('Bearer')) {
+      token = authorization.split(' ')[1];
+    }
+    if (!token) return next(new ErrorResponse('Not authorized to access this route', 401));
     try {
       const decoded = await jwt.verify(token, process.env.SECRET);
-      const { userId } = decoded;
-      const query = 'SELECT id_user FROM users WHERE id_user = $1';
-      const { rows } = await db.query(query, [userId]);
-      if (!rows.length) return res.status(400).send({ 'message': 'Token is invalid' });
-      req.user = { userId };
+      req.user = await User.findById(decoded.id);
       next();
-    } catch (err) {
-      return res.status(400).send(err);
+    } catch (error) {
+      return next(new ErrorResponse('Not authorized to access this route', 401));
     }
+  }),
+  authorize: (...roles) => (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return next(new ErrorResponse(`The user ${req.user.id} is not authorized to access this route`, 401));
+    }
+    next();
   }
 }
 

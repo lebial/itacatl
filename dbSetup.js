@@ -29,7 +29,10 @@ const createBusinessTable = async () => {
     name VARCHAR(255) NOT NULL,
     enabled BOOLEAN DEFAULT true,
     days_not_in_service TEXT ARRAY,
-    location TEXT NOT NULL
+    location TEXT NOT NULL,
+    phone VARCHAR(10) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    created_on TIMESTAMP
   );`;
     const response = await pool.query(createTableText);
     console.log(response);
