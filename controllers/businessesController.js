@@ -40,12 +40,12 @@ const Business = {
   }),
 
   //@desc      Add Item To Business
-  //@route     post /api/v1/business/:id/items
+  //@route     POST /api/v1/business/:id/items
   //@access    Private
   addItem: asyncHandler(async (req, res, next) => {
     const business = await BusinessModel.findById(req.params.id);
     if (!business) return next(new ErrorResponse(`No business found with the id ${req.params.id}`, 404));
-    if (business.user.toString() !== req.user.id) return next(new ErrorResponse('You are not the owner of this business', 401));
+    business.validateOwnership(req.user.id, next);
     const { items } = business;
     const itemsDictionary = _.keyBy(items, 'name');
     if (!_.isEmpty(itemsDictionary[req.body.name])) return next(new ErrorResponse('The item already exists, use update instead', 400));
@@ -54,6 +54,52 @@ const Business = {
     return res.status(200).json({
       success: true,
       data: business,
+    });
+  }),
+
+  //@desc      Edit Item from specific business
+  //@route     PUT /api/v1/business/:id/items/:itemId
+  //@access    Private
+  editItem: asyncHandler(async (req, res, next) => {
+    const business = await BusinessModel.findById(req.params.id);
+    if (!business) return next(new ErrorResponse('No business found with the specified id', 404));
+    business.validateOwnership(req.user.id, next);
+    const { items } = business;
+    const itemsDictionary = _.keyBy(items, '_id');
+    const itemToUpdate = itemsDictionary[req.params.itemId];
+    if (_.isEmpty(itemToUpdate)) {
+      return next(new ErrorResponse('The item do not exist, create it instead', 404));
+    }
+    const updatedItem = { ...itemToUpdate._doc, ...req.body };
+    business.items = Object.values({
+      ...itemsDictionary,
+      [updatedItem._id.toString()]: updatedItem,
+    });
+    await business.save();
+    return res.status(200).json({
+      success: true,
+      data: business,
+    });
+  }),
+
+  //@desc      Delete Item from specific business
+  //@route     DELETE /api/v1/business/:id/items/:itemId
+  //@access    Private
+  deleteItem: asyncHandler(async (req, res, next) => {
+    const business = await BusinessModel.findById(req.params.id);
+    if (!business) return next(new ErrorResponse('No business found with the specified id', 404));
+    business.validateOwnership(req.user.id, next);
+    const { items } = business;
+    const itemsDictionary = _.keyBy(items, '_id');
+    const { [req.params.itemId]: itemToDelete, ...restItems } = itemsDictionary;
+    if (_.isEmpty(itemToDelete)) {
+      return next(new ErrorResponse('The item does not exists', 404));
+    }
+    business.items = Object.values(restItems);
+    await business.save();
+    return res.status(200).json({
+      success: true,
+      data: {},
     });
   }),
 }
