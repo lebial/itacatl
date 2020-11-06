@@ -20,7 +20,12 @@ const schema = new mongoose.Schema({
     enum: ['user', 'owner'],
     default: 'user',
   },
-  phone: String,
+  phone: {
+    type: String, 
+    required: ['Please add a phone number', true],
+    maxlength: 10,
+    minlength: 10,
+  },
   password: {
     type: String,
     required: ['Please add a password', true],

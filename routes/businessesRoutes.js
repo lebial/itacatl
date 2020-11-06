@@ -7,6 +7,10 @@ router.route('/')
   .post(protect, authorize('owner', 'admin'), BusinessController.create);
 
 router.route('/:id/items')
-  .post(protect, authorize('owner', 'admin'), BusinessController.addItem)
+  .post(protect, authorize('owner', 'admin'), BusinessController.addItem);
+
+router.route('/:id/items/:itemId')
+  .put(protect, authorize('owner', 'admin'), BusinessController.editItem)
+  .delete(protect, authorize('owner', 'admin'), BusinessController.deleteItem);
 
 module.exports = router;
