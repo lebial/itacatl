@@ -1,7 +1,5 @@
 const mongoose = require('mongoose');
 const ErrorResponse = require('../utils/errorResponse');
-const Business = require('../controllers/businessesController');
-const { BusinessesRoutes } = require('../routes');
 
 const ItemsSchema = new mongoose.Schema({
   name: {
@@ -56,4 +54,7 @@ BussinesSchema.methods.validateOwnership = function(requestUserId, next) {
   return next(new ErrorResponse('You are not the owner of this business', 401));
 }
 
-module.exports = mongoose.model('Business', BussinesSchema);
+module.exports = {
+  ItemsSchema, 
+  BusinessModel: mongoose.model('Business', BussinesSchema),
+};
